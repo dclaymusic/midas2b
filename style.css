@@ -1,0 +1,153 @@
+@font-face {
+    font-family: 'greek';
+    src: url(greek.ttf);
+    }
+
+body {
+    overflow: hidden;
+    font-family: 'greek';
+    background-color: rgb(23, 23, 23);
+    /* user-select: none; */
+    font-size: 2rem;
+}
+
+.fullScreen {
+    visibility: hidden;
+    width: 1100px;
+    height: 700px;
+}
+
+main {
+    margin: auto;
+    display: block;
+    background-color: rgb(23, 23, 23);
+}
+
+.rows {
+    display: flex;
+    justify-content: center;
+}
+
+#loadbarloading {
+    width: 100px;
+    height: 40px;
+    border: 2px white solid;
+    background-color: rgba(255,255,255,0.5);
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+#middle { width: 100%; }
+
+#loadingScreen > p { 
+    color: white; 
+    margin: auto;
+    width: 500px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    vertical-align: center;
+
+}
+
+p {
+    text-align: center;
+    vertical-align: center;
+    width: 200px;
+    padding: 20px; 
+    line-height: 20px;
+    border-radius: 10px;
+}
+
+p > .e { padding: 40px; }
+
+#e0 { background-color: rgb(169, 119, 244); }
+#e1 { background-color: rgb(139, 147, 255); }
+#e2 { background-color: rgb(174, 132, 55); }
+#e3 { background-color: rgb(241, 161, 124); }
+#e4 { background-color: rgb(255, 225, 0); }
+#e5 { background-color: rgb(255, 204, 0); }
+#e6 { background-color: rgb(255, 174, 0); }
+#e7 { background-color: rgb(255, 162, 0); }
+#e8 { background-color: rgb(255, 150, 0); }
+#e9 { background-color: rgb(255, 140, 0); }
+#e10 { background-color: rgb(255, 130, 0); }
+#e11 { background-color: rgb(255, 120, 0); }
+#e12 { background-color: rgb(255, 110, 0); }
+#e13 { background-color: rgb(255, 100, 0); }
+
+
+.smaller {
+    font-size: 0.7rem;
+}
+
+p { 
+    margin: 5px; 
+    user-select: none;
+}
+
+#loadingScreen {
+     margin-top: 50px; 
+     cursor: pointer;
+}
+
+.floatingDiv {
+    position: absolute;
+    top: 0;
+    background-color: wheat;
+}
+
+img {
+    display: block;
+    width: 100px;
+    text-align: center;
+    margin: auto;
+    padding-top: 20px;
+
+}
+
+#middle { color: white; }
+
+.e:active {
+    color: black;
+}
+
+.e {
+    opacity: 65%;
+    color: rgba(0,0,0,1);
+    /* color: rgba(0,0,0,0); */
+}
+
+.e, .g { border: 2px rgba(0,0,0,0) solid;
+    cursor: pointer; 
+}
+
+.g {
+    background-color: white;
+    opacity: 65%;
+    /* color: rgba(0,0,0,0); */
+}
+
+.e:hover, .g:hover {
+    opacity: 100%;
+;}
+
+#row1, #row11 { 
+    padding-top: 10px; 
+}
+
+h1 { 
+    margin: 0; 
+    color: white;
+    text-align: center;
+    padding-top: 10px;
+    
+}
+
+#loadbarfull { display: none; }
+
+#loadingScreen > h1, #loadingScreen > p { color: rgb(255, 255, 0);}

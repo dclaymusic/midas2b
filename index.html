@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Sounds from King Midas and the Golden Touch</title>
+        <link rel="stylesheet" href="style.css">
+        <script type="text/javascript">
+
+                var snd, sndPick, isLoaded = false;
+                var isPlaying = false;
+                var audioCtx;
+                var allSoundsLoaded = false;
+                const PAN = 0.5;
+                var activeSnds = [];
+                
+                //value 0 is id, value 1 is emotion, value 2 is number of sounds, value 3 is sound counter
+                var sounds = [
+                    //ROW 1
+                    ['e0', 'cohen', 1, 0, false], 
+                    ['e1', 'max', 1, 0, false], 
+                    ['e2', 'margaux', 1, 0, false], 
+                    ['e3', 'ammar-margaux', 1, 0, false], 
+                    ['e4', 'colette-kaia', 1, 0, false], 
+                    ['e5', 'magda', 1, 0, false], 
+                    ['e6', 'nari', 1, 0, false], 
+                    ['e7', 'nico', 1, 0, false], 
+                    ['e8', 'oliver', 1, 0, false], 
+                    ['e9', 'patchy', 1, 0, false], 
+                    ['e10', 'rayan', 1, 0, false], 
+                    ['e11', 'rishi', 1, 0, false], 
+                    ['e12', 'rohan', 1, 0, false], 
+                    ['e13', 'ammar', 1, 0, false],
+
+        ];
+                let buffers = [];
+                window.onload = function() 
+                {
+                    isLoaded = true;
+                    // snd = new Audio('snd/snd.mp3');
+                    for(let i = 0; i < sounds.length; i++)
+                    {
+                        buffers[i] = null;
+                    }
+                    for(let i = 0; i < sounds.length; i++)
+                    {
+                        if(sounds[i][2] > 1) {
+                            buffers[i] = [];
+                            for(let j = 0; j < sounds[i][2]; j++)
+                            {
+                                buffers[i][j] = null;
+                            }
+                        }
+                    }
+                    initSnd();
+
+                    // var img = document.getElementById('pic');
+                    // img.onclick = function() { playSequence(); };
+                    // var startDiv = document.getElementById('startdiv');
+                    // startDiv.onclick = function() { initSnd(); }
+                }
+
+                function initSnd() 
+                {
+                    if(isLoaded) {
+                        var AudioContext = window.AudioContext || window.webkitAudioContext;   
+                        audioCtx = new AudioContext();
+
+                        for(let i = 0; i < sounds.length; i++)
+                        {
+                            loadAllSnds(i);
+                        }
+
+                        let d = document.getElementById('description');
+                        let lbl = document.getElementById('loadbarloading');
+                        lbl.style.visibility = 'visible';
+                        d.innerHTML = 'Sounds are loading...';
+                        let anim = 0;
+
+                        let loading = setInterval(function () {
+                            loadbarloading.style.width = (checkBuffers()/166) * 200 + 'px';
+                            if(checkBuffers() == sounds.length)
+                            {
+                                loadbarloading.style.backgroundColor = 'rgb(89, 150, 78)';
+                                loadbarloading.style.cursor = 'pointer';
+                                d.innerHTML = 'Tap to begin.';
+                                allSoundsLoaded = true;
+                                clearInterval(loading);
+                            }
+                        }, 250);
+
+                    }
+                }
+
+                function randomInt(max)
+                {
+                    rand_val = Math.floor(Math.random() * Math.floor(max + 1))
+                    return rand_val;
+                }
+
+
+
+                function loadAllSnds(input)
+                {
+                   
+                    let sndURL;
+
+                    if(sounds[input][2] > 1)
+                    {
+                        for(let j = 0; j < sounds[input][2]; j++)
+                        {
+                            sndURL = `./snd/${sounds[input][1] + j}.mp3`;
+                            const request = new XMLHttpRequest();
+                            request.open("GET", sndURL);
+                            request.responseType = "arraybuffer";
+                            request.onload = function() {
+                            let undecodedAudio = request.response;
+                            audioCtx.decodeAudioData(undecodedAudio, (data) => buffers[input][j] = data);
+                            }
+                            request.send(); 
+                        }
+                    }
+                    else
+                    {
+                        sndURL = `./snd/${sounds[input][1]}0.mp3`;
+                        const request = new XMLHttpRequest();
+                        request.open("GET", sndURL);
+                        request.responseType = "arraybuffer";
+                        request.onload = function() {
+                        let undecodedAudio = request.response;
+                        audioCtx.decodeAudioData(undecodedAudio, (data) => buffers[input] = data);
+                        }
+                        request.send(); 
+                    }
+                    
+                }
+
+                function loadSnd(input) {
+
+                    let sndURL;
+                    let bufferInput;
+
+                    if(sounds[input][2] > 1)
+                    {
+                        sndURL = `./snd/${sounds[input][1] + sounds[input][3]}.mp3`;
+                    }
+                    else
+                    {
+                        sndURL = `./snd/${sounds[input][1]}0.mp3`;
+                    }
+
+                    const request = new XMLHttpRequest();
+                    request.open("GET", sndURL);
+                    request.responseType = "arraybuffer";
+                    request.onload = function() {
+                    let undecodedAudio = request.response;
+
+                    if(sounds[input][2] > 1)
+                    {
+                        audioCtx.decodeAudioData(undecodedAudio, (data) => buffers[input][sounds[input][3]] = data);
+                    }
+                    else
+                    {
+                        audioCtx.decodeAudioData(undecodedAudio, (data) => buffers[input] = data);
+                    }
+
+                    };
+                    request.send();
+
+                };
+
+
+                function playSnd(input) {
+
+                    document.getElementById(sounds[input][0]).style.border = '2px white solid';
+                    document.getElementById(sounds[input][0]).style.opacity = '100%';
+                    activeSnds.push(audioCtx.createBufferSource());
+
+                    if(sounds[input][2] > 1)
+                    {
+                        activeSnds[activeSnds.length-1].buffer = buffers[input][sounds[input][3]];
+                    }
+                    else
+                    {
+                        activeSnds[activeSnds.length-1].buffer = buffers[input];
+                    }
+                    activeSnds[activeSnds.length-1].loop = true;
+                    activeSnds[activeSnds.length-1].connect(audioCtx.destination);
+                    activeSnds[activeSnds.length-1].start(audioCtx.currentTime); // play the source immediately
+                    sounds[input][4] = true;
+                    
+                };
+
+                function stopSnd(input) {
+
+                    document.getElementById(sounds[input][0]).style.border = '2px rgba(0,0,0,0) solid';
+                    document.getElementById(sounds[input][0]).style.opacity = '65%';
+                    for(let i = activeSnds.length-1; i >= 0; i--)
+                    {
+                        if(sounds[input][2] > 1)
+                        {
+                            if(activeSnds[i].buffer.length == buffers[input][sounds[input][3]].length)
+                            {
+                                activeSnds[i].stop();
+                                sounds[input][4] = false;
+                                activeSnds.splice(i,1);
+
+                                sounds[input][3] = (sounds[input][3] + 1) % sounds[input][2];
+
+                            }
+                        }
+                        else
+                        {
+                            if(activeSnds[i].buffer.length == buffers[input].length)
+                            {
+                                activeSnds[i].stop();
+                                sounds[input][4] = false;
+                                activeSnds.splice(i,1);
+
+                                
+                            }
+                        }
+                    }
+
+                }
+
+
+                //to call sound by name if feeling lazy
+                function selectSnd(x)
+                {
+                    for(let i = 0; i < sounds.length; i++ )
+                    { 
+                        if(sounds[i][0] == x)
+                        {
+                            if(sounds[i][4] == false)
+                            {
+                                loadSnd(i);
+                                playSnd(i);
+                            }
+                            else
+                            {
+                                stopSnd(i);
+                            }
+                        }
+                    }
+                }
+
+                function checkBuffers()
+                {
+                    let total = 0;
+                    for(let i = 0; i < sounds.length; i++)
+                    {
+                        if(sounds[i][2] > 1) {
+                            for(let j = 0; j < sounds[i][2]; j++)
+                            {
+                                if(buffers[i][j] != null) { total++; }
+                            }
+                        }
+                        else
+                        {
+                            if(buffers[i] != null) { total++; }
+                        }
+                    }
+                    return total;
+                }
+
+                function start() {
+                    if(allSoundsLoaded)
+                    {
+                        let l = document.getElementById('loadingScreen');
+                    let f = document.getElementById('fullScreen');
+                    l.style.display = 'none';
+                    f.style.visibility = 'visible';
+                    }
+                }
+
+
+                function shuffle() {
+                    // clear();
+                    // let a = [];
+                    // for(let i = 0; i < 100; i++)
+                    // {
+                    //     a.push('e' + i);
+                    // }
+                    let n = randomInt(15) + 5;
+                    for(let i = 0; i < n; i++)
+                    {
+                        selectSnd('e' + randomInt(99));
+                    }
+                }
+
+                function clear() {
+                    for(let i = 0; i < sounds.length; i++)
+                    {
+                        if(sounds[i][4] == true)
+                        {
+                            console.log(i);
+                            selectSnd(sounds[i][0]);
+                        }
+                    }
+                }
+
+
+        </script>
+    </head>
+    <body>
+        <div id="loadingScreen" onclick="start()">
+            <h1>Sounds from<br>"King Midas and the Golden Touch"</h1>
+            <img src="crown.png">
+            <p id="credit">Composed and Recorded by 2B</p>
+            <p id="description">Sounds are loading...</p>
+            <div id="loadbarfull">
+                <div id="loadbarloading"></div>
+            </div>
+        </div>
+            
+        <main class="fullScreen" id="fullScreen">
+            <h1>Sounds from<br>"King Midas and the Golden Touch"</h1>
+            <div class='rows' id="row1">
+                <p class='e yellow' id="e0" onclick="selectSnd('e0')">KING MIDAS<br>by Cohen</p>
+                <p class='e yellow' id="e1" onclick="selectSnd('e1')">SATYR<br>by Max</p>
+                <p class='e yellow' id="e2" onclick="selectSnd('e2')">HORSE GALLOPING #1<br>by Margaux</p>
+                <p class='e yellow' id="e3" onclick="selectSnd('e3')">HORSE GALLOPING #2<br>by Ammar and Margaux</p>
+            </div>
+            <div class='rows' id="row2">
+                <p class='e yellow' id="e4" onclick="selectSnd('e4')">GOLD #1<br>by Colette and Kaia</p>
+                <p class='e yellow' id="e5" onclick="selectSnd('e5')">GOLD #2<br>by Magda</p>
+                <p class='e yellow' id="e6" onclick="selectSnd('e6')">GOLD #3<br>by Nari</p>
+                <p class='e yellow' id="e7" onclick="selectSnd('e7')">GOLD #4<br>by Nico</p>
+                <p class='e yellow' id="e8" onclick="selectSnd('e8')">GOLD #5<br>by Oliver</p>
+            </div>
+            <div class='rows' id="row3">
+                <p class='e yellow' id="e9" onclick="selectSnd('e9')">GOLD #6<br>by Patchy</p>
+                <p class='e yellow' id="e10" onclick="selectSnd('e10')">GOLD #7<br>by Rayan</p>
+                <p class='e yellow' id="e11" onclick="selectSnd('e11')">GOLD #8<br>by Rishi</p>
+                <p class='e yellow' id="e12" onclick="selectSnd('e12')">GOLD #9<br>by Rohan</p>
+                <p class='e yellow' id="e13" onclick="selectSnd('e13')">GOLD #10<br>by Ammar</p>
+            </div>
+            <div class = 'buttons' id="row4">
+                <!-- <p class='g' onclick="shuffle()">Shuffle</p> -->
+                <p id="middle">Click on a box to hear the sound. Click again to turn it off.</p>
+                <!-- <p class="g" onclick="clear()">Clear</p> -->
+            </div>
+        </main>
+        <!-- <div id="startdiv" class="fullScreen floatingDiv">
+        </div> -->
+    </body>
+</html>
